@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
 	"testing"
 )
@@ -31,5 +32,14 @@ func TestRegExpMatch(t *testing.T) {
 
 	if result[1] != "As" {
 		t.Fatalf("capture fail, wanted As, got:%s", result[1])
+	}
+}
+
+func TestStructTagParse(t *testing.T) {
+	ss := `gas:"123"`
+	tag := reflect.StructTag(ss)
+	gas := tag.Get("gas")
+	if gas != "123" {
+		t.Fatal("not cool")
 	}
 }
