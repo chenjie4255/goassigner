@@ -1,36 +1,30 @@
 package example
 
-import (
-	"github.com/chenjie4255/goassigner/example/st"
-)
-
 //go:generate goassigner -f=$GOFILE
 
 var Foo int64
 
-// @goassigner:StructB:github.com/chenjie4255/goassigner/example/st
-type ArrayFoo struct {
-	Foo1 string `gas:"-"`
+// @goassigner:User:github.com/chenjie4255/goassigner/example/model
+type Child struct {
+	ID   int64  `gas:"-"`
+	Name string `gas:"-"`
+	Age  int64  `gas:"-"`
 }
 
 // StructA is a text structure
-// @goassigner:StructB:github.com/chenjie4255/goassigner/example/st
-type StructA struct {
-	Foo1 string `gas:"-"`
-	Foo2 string `gas:"-"`
+// @goassigner:User:github.com/chenjie4255/goassigner/example/model
+type UserBrief struct {
+	ID   int64  `gas:"-"`
+	Name string `gas:"-"`
 
-	// @goassigner:StructB:github.com/chenjie4255/goassigner/example/st
-	Fxx struct {
-		Foo1 string `gas:"-"`
-		Foo2 string `gas:"-"`
+	// @goassigner:VIPInfo:github.com/chenjie4255/goassigner/example/model
+	VIP struct {
+		VIPLevel int64 `gas:"-"`
 
-		// @goassigner:StructB:github.com/chenjie4255/goassigner/example/st
-		Fxxx struct {
-			Foo1 string `gas:"-"`
+		// @goassigner:VIPExInfo:github.com/chenjie4255/goassigner/example/model
+		ExInfo struct {
+			SumCost int64 `gas:"-"`
 		}
 	}
-	FA []ArrayFoo
-
-	Txx            st.CustomT `gas:"-"`
-	st.EmbedStruct `gas:"-"`  // not support for now...
+	Children []Child
 }
