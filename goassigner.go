@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go/ast"
 	"log"
 	"os"
 	"path/filepath"
@@ -68,6 +67,9 @@ func (s *{{.TopStructType}})assign{{range .FieldPrefix}}{{.}}{{end}}(src {{if .L
 }
 {{ $length := len .FieldPrefix }} {{ if eq $length 0 }}
 func assign{{.TopStructType}}Array(dest *[]{{.TopStructType}}, src []{{if .LinkPackage}}{{.LinkPackage}}.{{end}}{{.LinkObject}}) {
+	if len(src) == 0 {
+		return
+	} 
 	*dest = make([]{{.TopStructType}}, len(src))
 	for i, so := range src {
 		{{range .Fields}}(*dest)[i].{{range .Prefix}}{{.}}.{{end}}{{.Name}} = so.{{.Name}} 
@@ -148,11 +150,4 @@ func parseAssignerComment(text string) (linkName, linkPackagePath string) {
 	}
 
 	return
-}
-
-func identifyPackage(f *ast.File) string {
-	if f.Name == nil {
-		return ""
-	}
-	return f.Name.Name
 }

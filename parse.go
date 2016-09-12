@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -151,7 +152,10 @@ func parseFile(path string) (string, []assignObject, error) {
 		return "", nil, err
 	}
 
-	packageName := identifyPackage(f)
+	packageName, err := parsePackageName(f)
+	if err != nil {
+		return "", nil, err
+	}
 
 	ret := []assignObject{}
 
@@ -169,4 +173,11 @@ func parseFile(path string) (string, []assignObject, error) {
 	}
 
 	return packageName, ret, nil
+}
+
+func parsePackageName(f *ast.File) (string, error) {
+	if f.Name == nil {
+		return "", errors.New("no package name found")
+	}
+	return f.Name.Name, nil
 }
