@@ -9,7 +9,7 @@ import (
 
 func TestRegExpMatch(t *testing.T) {
 	reg := regexp.MustCompile(parseReg)
-	text := "@goassigner:As:github.com/chenjie4255/12"
+	text := "// @goassigner:As:github.com/chenjie-4255/xxxx"
 	result := reg.FindStringSubmatch(text)
 	if len(result) != 3 {
 		t.Fatal("should match")
@@ -19,8 +19,8 @@ func TestRegExpMatch(t *testing.T) {
 		t.Fatalf("capture fail, wanted As, got:%s", result[1])
 	}
 
-	if result[2] != "github.com/chenjie4255/12" {
-		t.Fatalf("capture fail, wanted github.com/chenjie4255/12, got:%s", result[2])
+	if result[2] != "github.com/chenjie-4255/xxxx" {
+		t.Fatalf("capture fail, wanted github.com/chenjie-4255/xxxx, got:%s", result[2])
 	}
 
 	text = "@goassigner:As"

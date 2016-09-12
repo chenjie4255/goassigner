@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go/ast"
 	"log"
 	"os"
 	"path/filepath"
@@ -16,7 +17,7 @@ func main() {
 	flag.StringVar(&inputFile, "f", "", "output file")
 	flag.Parse()
 
-	objs, err := parseFile(inputFile)
+	packageName, objs, err := parseFile(inputFile)
 	if err != nil {
 		fmt.Printf("parse file error:%s", err)
 		return
@@ -24,7 +25,7 @@ func main() {
 
 	fmt.Printf("parse result:%+v", objs)
 	outputPath := getOutputPath(inputFile)
-	render(outputPath, "example", objs)
+	render(outputPath, packageName, objs)
 }
 
 func getOutputPath(inputPath string) string {
@@ -133,7 +134,7 @@ func render(outputPath, packageName string, objs []assignObject) {
 }
 
 const (
-	parseReg = `@goassigner:([A-Z][a-z0-9A-Z]+)[:]{0,1}([A-Za-z0-9/-_.]*)`
+	parseReg = `@goassigner:([A-Z][a-z0-9A-Z]+)[:]{0,1}([A-Za-z0-9/\-_\.]*)`
 )
 
 func parseAssignerComment(text string) (linkName, linkPackagePath string) {
@@ -142,7 +143,16 @@ func parseAssignerComment(text string) (linkName, linkPackagePath string) {
 	if len(result) == 3 {
 		linkName = result[1]
 		linkPackagePath = result[2]
+	} else {
+		fmt.Printf("parse reg text(%s) fail, result:%v\n", text, result)
 	}
 
 	return
+}
+
+func identifyPackage(f *ast.File) string {
+	if f.Name == nil {
+		return ""
+	}
+	return f.Name.Name
 }

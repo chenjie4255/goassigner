@@ -98,6 +98,8 @@ func parseComment(object *assignObject, commentGroup *ast.CommentGroup) bool {
 				importPath[packagePath] = true
 			}
 			return true
+		} else {
+			fmt.Printf("parse comment(%s) fail\n", comment.Text)
 		}
 	}
 
@@ -108,13 +110,16 @@ func parseComment(object *assignObject, commentGroup *ast.CommentGroup) bool {
 func parseGeneDecl(genDecl *ast.GenDecl) (ret []assignObject) {
 	// check comment
 	object := &assignObject{}
+	fmt.Printf("parse for %vl\n", genDecl)
 
 	if !parseComment(object, genDecl.Doc) {
+		fmt.Printf("no comment found...\n")
 		return nil
 	}
 
 	for _, spec := range genDecl.Specs {
 		if typeSpec, ok := spec.(*ast.TypeSpec); ok {
+			fmt.Printf("found struct:%s\n", typeSpec.Name.Name)
 			if typeSpec.Name != nil {
 				object.TopStructType = typeSpec.Name.Name
 			}
@@ -139,12 +144,14 @@ func parseGeneDecl(genDecl *ast.GenDecl) (ret []assignObject) {
 	return
 }
 
-func parseFile(path string) ([]assignObject, error) {
+func parseFile(path string) (string, []assignObject, error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
+
+	packageName := identifyPackage(f)
 
 	ret := []assignObject{}
 
@@ -161,5 +168,5 @@ func parseFile(path string) ([]assignObject, error) {
 		}
 	}
 
-	return ret, nil
+	return packageName, ret, nil
 }

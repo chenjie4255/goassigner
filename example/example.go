@@ -11,9 +11,8 @@ type Child struct {
 	Age  int64  `gas:"-"`
 }
 
-// StructA is a text structure
 // @goassigner:User:github.com/chenjie4255/goassigner/example/model
-type UserBrief struct {
+type userBrief struct {
 	ID   int64  `gas:"-"`
 	Name string `gas:"-"`
 
