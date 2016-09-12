@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/token"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -180,4 +181,21 @@ func parsePackageName(f *ast.File) (string, error) {
 		return "", errors.New("no package name found")
 	}
 	return f.Name.Name, nil
+}
+
+const (
+	parseReg = `@goassigner:([A-Z][a-z0-9A-Z]+)[:]{0,1}([A-Za-z0-9/\-_\.]*)`
+)
+
+func parseAssignerComment(text string) (linkName, linkPackagePath string) {
+	reg := regexp.MustCompile(parseReg)
+	result := reg.FindStringSubmatch(text)
+	if len(result) == 3 {
+		linkName = result[1]
+		linkPackagePath = result[2]
+	} else {
+		fmt.Printf("parse reg text(%s) fail, result:%v\n", text, result)
+	}
+
+	return
 }
