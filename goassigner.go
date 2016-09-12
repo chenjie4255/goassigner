@@ -59,12 +59,21 @@ package {{.Package}}
 import ({{range .ImportPaths}}
 "{{.}}"{{end}}
 )
+
 {{range .Objects}}
-func (s *{{.TopStructType}})Assign{{range .FieldPrefix}}{{.}}{{end}}(src {{if .LinkPackage}}{{.LinkPackage}}.{{end}}{{.LinkObject}}) {
+func (s *{{.TopStructType}})assign{{range .FieldPrefix}}{{.}}{{end}}(src {{if .LinkPackage}}{{.LinkPackage}}.{{end}}{{.LinkObject}}) {
 	{{range .Fields}}s.{{range .Prefix}}{{.}}.{{end}}{{.Name}} = src.{{.Name}}
 	{{end}}
 }
-{{end}}
+{{ $length := len .FieldPrefix }} {{ if eq $length 0 }}
+func assign{{.TopStructType}}Array(dest *[]{{.TopStructType}}, src []{{if .LinkPackage}}{{.LinkPackage}}.{{end}}{{.LinkObject}}) {
+	*dest = make([]{{.TopStructType}}, len(src))
+	for i, so := range src {
+		{{range .Fields}}(*dest)[i].{{range .Prefix}}{{.}}.{{end}}{{.Name}} = so.{{.Name}} 
+		{{end}}
+	}
+}
+{{end}}{{end}}
 `))
 
 func render(outputPath, packageName string, objs []assignObject) {
